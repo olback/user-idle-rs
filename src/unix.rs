@@ -1,7 +1,8 @@
 use crate::error::Error;
 use dbus;
 
-// https://bitbucket.org/pidgin/main/src/default/pidgin/gtkidle.c
+// Based on https://bitbucket.org/pidgin/main/src/default/pidgin/gtkidle.c
+
 const SCREENSAVERS: &[&[&str]] = &[
     &["org.freedesktop.ScreenSaver", "/org/freedesktop/ScreenSaver", "org.freedesktop.ScreenSaver"],
     &["org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", "org.gnome.ScreenSaver"],

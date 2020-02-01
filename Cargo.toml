@@ -1,6 +1,6 @@
 [package]
 name = "user-idle"
-version = "0.1.0-alpha"
+version = "0.1.1"
 authors = ["Edwin Svensson <git@olback.net>"]
 edition = "2018"
 description = "Get a users idle time."
@@ -24,4 +24,4 @@ all-features = true
 dbus = "0.8"
 
 [target.'cfg(windows)'.dependencies]
-winapi = { version = "0.3", features = [ "winuser" ] }
+winapi = { version = "0.3", features = [ "winuser", "sysinfoapi" ] }

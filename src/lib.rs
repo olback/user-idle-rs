@@ -1,12 +1,20 @@
-/// Get a users idle time.
-/// ```rust
-/// use user_idle::UserIdle;
-/// let idle = UserIdle::get_time().unwrap();
-/// let idle_seconds = idle.as_seconds();
-/// let idle_minutes = idle.as_minutes();
-/// // Check the documentation for more methods
-/// ```
+//! Get a users idle time.
+//!
+//! On Linux systems, the time returned is the time the desktop has been locked.
+//!
+//! On windows systems, the time returned is the time since the last user input event.
+//! See [GetLastInputInfo](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getlastinputinfo) for more info.
+//!
+//! Example:
+//! ```rust
+//! use user_idle::UserIdle;
+//! let idle = UserIdle::get_time().unwrap();
+//! let idle_seconds = idle.as_seconds();
+//! let idle_minutes = idle.as_minutes();
+//! // Check the documentation for more methods
+//! ```
 
+use std::time::Duration;
 mod error;
 pub use error::Error;
 
@@ -72,4 +80,27 @@ impl UserIdle {
         self.as_months() / 12
     }
 
+    /// Convert to a std::time::Duration
+    pub fn duration(&self) -> Duration {
+        Duration::from_secs(self.seconds as u64)
+    }
+
 }
+
+// #[cfg(test)]
+// mod tests {
+
+//     use super::UserIdle;
+
+//     #[test]
+//     fn main() {
+
+//         std::thread::sleep(std::time::Duration::from_secs(10));
+
+//         let idle = UserIdle::get_time().unwrap();
+
+//         println!("Idle for: {} seconds", idle.as_seconds());
+
+//     }
+
+// }

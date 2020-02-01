@@ -3,7 +3,7 @@
 | OS      | Supported               |
 | ------- | ----------------------- |
 | Linux   | :heavy_check_mark:      |
-| Windows | :x: (wip)               |
+| Windows | :heavy_check_mark:      |
 | MacOS   | :question: (not tested) |
 
 ### Example
