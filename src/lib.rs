@@ -45,7 +45,7 @@ impl UserIdle {
         let seconds = dbus_impl::get_idle_time()?;
 
         #[cfg(target_os = "windows")]
-        let seconds = windows::get_idle_time()?;
+        let seconds = windows_impl::get_idle_time()?;
 
         #[cfg(target_os = "macos")]
         let seconds = quartz::get_idle_time()?;

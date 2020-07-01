@@ -24,7 +24,7 @@ pub fn get_idle_time() -> Result<u64, Error> {
     let ok = unsafe { GetLastInputInfo(p_last_input_info) } != 0;
 
     match ok {
-        true => Ok((now - last_input_info.dwTime) / 1000),
+        true => Ok(((now - last_input_info.dwTime) / 1000) as u64),
         false => Err(Error::new("GetLastInputInfo failed"))
     }
 
