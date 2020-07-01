@@ -10,7 +10,7 @@ use winapi::um::{
 
 // Based on https://bitbucket.org/pidgin/main/src/8066acc5ed9306c5a53da8f66f50fb5cf38782c7/pidgin/win32/gtkwin32dep.c#lines-597
 
-pub fn get_idle_time() -> Result<u32, Error> {
+pub fn get_idle_time() -> Result<u64, Error> {
 
     let now = unsafe { GetTickCount() };
 

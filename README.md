@@ -1,10 +1,16 @@
 # Get a users idle time
 
-| OS      | Supported               |
-| ------- | ----------------------- |
-| Linux   | :heavy_check_mark:      |
-| Windows | :heavy_check_mark:      |
-| MacOS   | :question: (not tested) |
+| OS               | Supported        |
+| ---------------- | ---------------- |
+| Linux (x11)      | ✔️                |
+| Linux (dbus)     | ✔️*               |
+| Linux (wayland)  | ❌               |
+| Windows          | ✔️                |
+| MacOS            | ❌ (PRs welcome) |
+
+\* DBus returns the time the session has been locked, not the time since the last user input event.
+
+By default, x11 is used on Linux. DBus can be enabled in `Cargo.toml` by disabling default-features and enabling `dbus`.
 
 ### Example
 

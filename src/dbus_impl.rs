@@ -3,13 +3,13 @@ use dbus;
 
 // Based on https://bitbucket.org/pidgin/main/src/default/pidgin/gtkidle.c
 
-const SCREENSAVERS: &[&[&str]] = &[
+const SCREENSAVERS: &'static [&'static [&'static str]] = &[
     &["org.freedesktop.ScreenSaver", "/org/freedesktop/ScreenSaver", "org.freedesktop.ScreenSaver"],
     &["org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", "org.gnome.ScreenSaver"],
     &["org.kde.ScreenSaver", "/org/kde/ScreenSaver", "org.kde.ScreenSaver"]
 ];
 
-pub fn get_idle_time() -> Result<u32, Error> {
+pub fn get_idle_time() -> Result<u64, Error> {
 
     for screensaver in SCREENSAVERS {
 
@@ -27,10 +27,10 @@ pub fn get_idle_time() -> Result<u32, Error> {
 
         // freedesktop seems to return the time in milliseconds??
         if screensaver[0] == "org.freedesktop.ScreenSaver" {
-            return Ok((time / 1000) as u32)
+            return Ok((time / 1000) as u64)
         }
 
-        return Ok(time)
+        return Ok(time as u64)
 
     }
 

@@ -1,7 +1,7 @@
 [package]
 name = "user-idle"
-version = "0.1.1"
-authors = ["Edwin Svensson <git@olback.net>"]
+version = "0.2.0"
+authors = ["Edwin Svensson <user_idle_rs@olback.net>"]
 edition = "2018"
 description = "Get a users idle time."
 license = "MIT OR Apache-2.0"
@@ -14,14 +14,16 @@ keywords = [ "idle", "gui", "ui", "user", "afk" ]
 circle-ci = { repository = "olback/user-idle-rs", branch = "master" }
 
 [package.metadata.docs.rs]
-all-features = true
+all-features = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
+[features]
+default = [ "x11" ]
 
-[target.'cfg(unix)'.dependencies]
-dbus = "0.8"
+[target.'cfg(target_os = "linux")'.dependencies]
+x11 = { version = "2.18", features = [ "xlib", "xss" ], optional = true }
+dbus = { version = "0.8", optional = true }
 
-[target.'cfg(windows)'.dependencies]
+[target.'cfg(target_os = "windows")'.dependencies]
 winapi = { version = "0.3", features = [ "winuser", "sysinfoapi" ] }
