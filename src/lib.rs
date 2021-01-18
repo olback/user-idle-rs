@@ -27,7 +27,7 @@ mod dbus_impl;
 mod windows_impl;
 
 #[cfg(target_os = "macos")]
-mod quartz;
+mod macos_impl;
 
 pub struct UserIdle {
     seconds: u64
@@ -48,7 +48,7 @@ impl UserIdle {
         let seconds = windows_impl::get_idle_time()?;
 
         #[cfg(target_os = "macos")]
-        let seconds = quartz::get_idle_time()?;
+        let seconds = macos_impl::get_idle_time()?;
 
         Ok(UserIdle {
             seconds: seconds
