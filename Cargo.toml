@@ -27,3 +27,9 @@ dbus = { version = "0.8", optional = true }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 winapi = { version = "0.3", features = [ "winuser", "sysinfoapi" ] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+IOKit-sys = "0.1.5"
+mach = "0.3"
+CoreFoundation-sys = "0.1"
+cstr = "0.2"
