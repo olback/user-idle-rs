@@ -6,7 +6,7 @@
 | Linux (dbus)     | ✔️*               |
 | Linux (wayland)  | ❌               |
 | Windows          | ✔️                |
-| MacOS            | ❌ (PRs welcome) |
+| MacOS            | ✔️                |
 
 \* DBus returns the time the session has been locked, not the time since the last user input event.
 
