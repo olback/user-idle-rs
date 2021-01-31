@@ -1,5 +1,6 @@
 use crate::error::Error;
 use dbus;
+use std::time::Duration;
 
 // Based on https://bitbucket.org/pidgin/main/src/default/pidgin/gtkidle.c
 
@@ -9,7 +10,7 @@ const SCREENSAVERS: &'static [&'static [&'static str]] = &[
     &["org.kde.ScreenSaver", "/org/kde/ScreenSaver", "org.kde.ScreenSaver"]
 ];
 
-pub fn get_idle_time() -> Result<u64, Error> {
+pub fn get_idle_time() -> Result<Duration, Error> {
 
     for screensaver in SCREENSAVERS {
 
@@ -27,10 +28,11 @@ pub fn get_idle_time() -> Result<u64, Error> {
 
         // freedesktop seems to return the time in milliseconds??
         if screensaver[0] == "org.freedesktop.ScreenSaver" {
-            return Ok((time / 1000) as u64)
+            
+            return Ok(Duration::from_milis(time as u64))
         }
 
-        return Ok(time as u64)
+        return Ok(Duration::from_secs(time as u64))
 
     }
 

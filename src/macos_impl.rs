@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::error::Error;
 
 use IOKit_sys as io_kit;
@@ -7,7 +9,7 @@ use io_kit::IOMasterPort;
 use mach::{kern_return::KERN_SUCCESS, port::{MACH_PORT_NULL, mach_port_t}};
 use cf::{CFDataGetBytes, CFDataGetTypeID, CFDictionaryGetValueIfPresent, CFGetTypeID, CFNumberGetTypeID, CFNumberGetValue, CFRange, CFRelease, CFStringCreateWithCString, CFTypeRef, kCFAllocatorDefault, kCFNumberSInt64Type, kCFStringEncodingUTF8}; 
 
-pub fn get_idle_time() -> Result<u64, Error> {
+pub fn get_idle_time() -> Result<Duration, Error> {
     let mut ns = 0u64;
     let mut port: mach_port_t = 0;
     let mut iter = 0;
@@ -82,7 +84,7 @@ pub fn get_idle_time() -> Result<u64, Error> {
         io_kit::IOObjectRelease(iter);
     }
     let dur = std::time::Duration::from_nanos(ns);
-    Ok(dur.as_secs())
+    Ok(dur)
 }
 
 #[cfg(test)]

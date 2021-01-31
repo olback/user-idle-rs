@@ -30,7 +30,7 @@ mod windows_impl;
 mod macos_impl;
 
 pub struct UserIdle {
-    seconds: u64
+    duration: Duration
 }
 
 impl UserIdle {
@@ -39,26 +39,44 @@ impl UserIdle {
     pub fn get_time() -> Result<Self, Error> {
 
         #[cfg(all(target_os = "linux", not(feature = "dbus")))]
-        let seconds = x11_impl::get_idle_time()?;
+        let duration = x11_impl::get_idle_time()?;
 
         #[cfg(all(target_os = "linux", feature = "dbus"))]
-        let seconds = dbus_impl::get_idle_time()?;
+        let duration = dbus_impl::get_idle_time()?;
 
         #[cfg(target_os = "windows")]
-        let seconds = windows_impl::get_idle_time()?;
+        let duration = windows_impl::get_idle_time()?;
 
         #[cfg(target_os = "macos")]
-        let seconds = macos_impl::get_idle_time()?;
+        let duration = macos_impl::get_idle_time()?;
 
         Ok(UserIdle {
-            seconds: seconds
+            duration,
         })
 
     }
 
+    /// Get time in milliseconds
+    ///
+    /// Note: Only MacOS provides this level of resolution,
+    /// other Operating Systems will provide the same value as
+    /// `self.as_milliseconds() * 1_000_000`
+    pub fn as_nanoseconds(&self) -> u128 {
+        self.duration.as_nanos()
+    }
+
+    /// Get time in milliseconds
+    ///
+    /// Note: Not all of the dbus screen savers provided
+    /// this level of resolution, in those cases this will
+    /// provide the same value as `self.as_seconds() * 1000`
+    pub fn as_milliseconds(&self) -> u128 {
+        self.duration.as_millis()
+    }
+
     /// Get time in seconds
     pub fn as_seconds(&self) -> u64 {
-        self.seconds
+        self.duration.as_secs()
     }
 
     /// Get time in minutes
@@ -93,7 +111,7 @@ impl UserIdle {
 
     /// Convert to a std::time::Duration
     pub fn duration(&self) -> Duration {
-        Duration::from_secs(self.seconds)
+        self.duration
     }
 
 }
