@@ -29,7 +29,7 @@ pub fn get_idle_time() -> Result<Duration, Error> {
         // freedesktop seems to return the time in milliseconds??
         if screensaver[0] == "org.freedesktop.ScreenSaver" {
             
-            return Ok(Duration::from_milis(time as u64))
+            return Ok(Duration::from_millis(time as u64))
         }
 
         return Ok(Duration::from_secs(time as u64))
