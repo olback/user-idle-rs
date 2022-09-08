@@ -1,6 +1,6 @@
 [package]
 name = "user-idle"
-version = "0.5.1"
+version = "0.5.2"
 authors = ["Edwin Svensson <user_idle_rs@olback.net>"]
 edition = "2018"
 description = "Get a users idle time."
