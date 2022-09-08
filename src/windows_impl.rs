@@ -16,7 +16,7 @@ pub fn get_idle_time() -> Result<Duration, Error> {
     let now = unsafe { GetTickCount() };
 
     let mut last_input_info = LASTINPUTINFO {
-        cbSize: 8, // ! Probably only true for 64 bit systems?
+        cbSize: std::mem::size_of::<LASTINPUTINFO>() as u32,
         dwTime: 0
     };
 
