@@ -55,6 +55,9 @@ pub fn get_idle_time() -> Result<Duration, Error> {
                         prop_name_cf as _,
                         &mut value,
                     );
+
+                    CFRelease(prop_name_cf.cast());
+
                     if present == 1 {
                         io_kit::IOObjectRelease(iter);
                         io_kit::IOObjectRelease(entry as _);
