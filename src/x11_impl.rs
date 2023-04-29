@@ -12,7 +12,7 @@ pub fn get_idle_time() -> Result<Duration, Error> {
     unsafe {
 
         let info = XScreenSaverAllocInfo();
-        let display = XOpenDisplay(0 as *const c_char);
+        let display = XOpenDisplay(std::ptr::null::<c_char>());
         let screen = XDefaultScreen(display);
         let root_window = XRootWindow(display, screen);
         let status = XScreenSaverQueryInfo(display, root_window, info);
@@ -22,7 +22,7 @@ pub fn get_idle_time() -> Result<Duration, Error> {
         XCloseDisplay(display);
 
         if status == 1 {
-            Ok(Duration::from_millis(time.into()))
+            Ok(Duration::from_millis(time))
         } else {
             Err(Error::new("Status not OK"))
         }
