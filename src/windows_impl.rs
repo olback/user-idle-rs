@@ -1,8 +1,8 @@
-use std::{mem::size_of, time::Duration};
+use std::{mem::size_of, ptr::addr_of_mut, time::Duration};
 
-use winapi::um::{
-    sysinfoapi::GetTickCount,
-    winuser::{GetLastInputInfo, LASTINPUTINFO, PLASTINPUTINFO},
+use windows_sys::Win32::{
+    System::SystemInformation::GetTickCount,
+    UI::Input::KeyboardAndMouse::{GetLastInputInfo, LASTINPUTINFO},
 };
 
 use crate::error::Error;
@@ -17,10 +17,7 @@ pub fn get_idle_time() -> Result<Duration, Error> {
         dwTime: 0,
     };
 
-    let p_last_input_info: PLASTINPUTINFO =
-        &mut last_input_info as *mut LASTINPUTINFO;
-
-    if unsafe { GetLastInputInfo(p_last_input_info) } == 0 {
+    if unsafe { GetLastInputInfo(addr_of_mut!(last_input_info)) } == 0 {
         Err(Error::new("GetLastInputInfo failed"))
     } else {
         Ok(Duration::from_millis(u64::from(
