@@ -1,12 +1,12 @@
-# Get a users idle time
+# Get the idle time of a user
 
-| OS               | Supported        |
-| ---------------- | ---------------- |
-| Linux (x11)      | ✔️                |
-| Linux (dbus)     | ✔️*               |
-| Linux (wayland)  | ❌               |
-| Windows          | ✔️                |
-| MacOS            | ✔️                |
+| OS              | Supported |
+| --------------- | --------- |
+| Linux (x11)     | ✔️         |
+| Linux (dbus)    | ✔️*        |
+| Linux (wayland) | ❌         |
+| Windows         | ✔️         |
+| MacOS           | ✔️         |
 
 \* DBus returns the time the session has been locked, not the time since the last user input event.
 
@@ -21,5 +21,5 @@ let idle = UserIdle::get_time().unwrap();
 
 let idle_seconds = idle.as_seconds();
 let idle_minutes = idle.as_minutes();
-// Check the documentation for more methods
 ```
+Check the [documentation](https://docs.rs/user-idle/latest/user_idle/) for more methods
