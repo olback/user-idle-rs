@@ -1,16 +1,14 @@
 use crate::Error;
-use x11::{
-    xss::{XScreenSaverAllocInfo, XScreenSaverQueryInfo},
-    xlib::{XOpenDisplay, XDefaultScreen, XRootWindow, XFree, XCloseDisplay}
-};
 use std::os::raw::c_char;
 use std::time::Duration;
+use x11::{
+    xlib::{XCloseDisplay, XDefaultScreen, XFree, XOpenDisplay, XRootWindow},
+    xss::{XScreenSaverAllocInfo, XScreenSaverQueryInfo},
+};
 
 // Mostly taken from https://stackoverflow.com/questions/222606/detecting-keyboard-mouse-activity-in-linux
 pub fn get_idle_time() -> Result<Duration, Error> {
-
     unsafe {
-
         let info = XScreenSaverAllocInfo();
         let display = XOpenDisplay(std::ptr::null::<c_char>());
         let screen = XDefaultScreen(display);
@@ -26,7 +24,5 @@ pub fn get_idle_time() -> Result<Duration, Error> {
         } else {
             Err(Error::new("Status not OK"))
         }
-
     }
-
 }

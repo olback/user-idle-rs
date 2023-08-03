@@ -30,14 +30,12 @@ mod windows_impl;
 mod macos_impl;
 
 pub struct UserIdle {
-    duration: Duration
+    duration: Duration,
 }
 
 impl UserIdle {
-
     /// Get the idle time
     pub fn get_time() -> Result<Self, Error> {
-
         #[cfg(all(target_os = "linux", not(feature = "dbus")))]
         let duration = x11_impl::get_idle_time()?;
 
@@ -50,10 +48,7 @@ impl UserIdle {
         #[cfg(target_os = "macos")]
         let duration = macos_impl::get_idle_time()?;
 
-        Ok(UserIdle {
-            duration,
-        })
-
+        Ok(UserIdle { duration })
     }
 
     /// Get time in milliseconds
@@ -113,7 +108,6 @@ impl UserIdle {
     pub fn duration(&self) -> Duration {
         self.duration
     }
-
 }
 
 // #[cfg(test)]

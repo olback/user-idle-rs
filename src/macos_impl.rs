@@ -2,12 +2,19 @@ use std::time::Duration;
 
 use crate::error::Error;
 
-use IOKit_sys as io_kit;
 use CoreFoundation_sys as cf;
+use IOKit_sys as io_kit;
 
+use cf::{
+    kCFAllocatorDefault, kCFNumberSInt64Type, kCFStringEncodingUTF8, CFDataGetBytes,
+    CFDataGetTypeID, CFDictionaryGetValueIfPresent, CFGetTypeID, CFNumberGetTypeID,
+    CFNumberGetValue, CFRange, CFRelease, CFStringCreateWithCString, CFTypeRef,
+};
 use io_kit::IOMasterPort;
-use mach::{kern_return::KERN_SUCCESS, port::{MACH_PORT_NULL, mach_port_t}};
-use cf::{CFDataGetBytes, CFDataGetTypeID, CFDictionaryGetValueIfPresent, CFGetTypeID, CFNumberGetTypeID, CFNumberGetValue, CFRange, CFRelease, CFStringCreateWithCString, CFTypeRef, kCFAllocatorDefault, kCFNumberSInt64Type, kCFStringEncodingUTF8}; 
+use mach::{
+    kern_return::KERN_SUCCESS,
+    port::{mach_port_t, MACH_PORT_NULL},
+};
 
 pub fn get_idle_time() -> Result<Duration, Error> {
     let mut ns = 0u64;
@@ -16,7 +23,7 @@ pub fn get_idle_time() -> Result<Duration, Error> {
     let mut value: CFTypeRef = std::ptr::null_mut();
     let mut properties = std::ptr::null_mut();
     let entry;
-    
+
     unsafe {
         let port_result = IOMasterPort(MACH_PORT_NULL, &mut port as _);
         if port_result != KERN_SUCCESS {
@@ -27,10 +34,10 @@ pub fn get_idle_time() -> Result<Duration, Error> {
         }
         let service_name = cstr::cstr!("IOHIDSystem");
         let service_result = io_kit::IOServiceGetMatchingServices(
-                port as _,
-                io_kit::IOServiceMatching(service_name.as_ptr() as _),
-                &mut iter,
-            );
+            port as _,
+            io_kit::IOServiceMatching(service_name.as_ptr() as _),
+            &mut iter,
+        );
         if service_result != KERN_SUCCESS {
             let last_os = std::io::Error::last_os_error();
             return Err(Error {
@@ -46,15 +53,16 @@ pub fn get_idle_time() -> Result<Duration, Error> {
                     kCFAllocatorDefault,
                     0,
                 );
-                
+
                 if prop_res == KERN_SUCCESS {
                     let prop_name = cstr::cstr!("HIDIdleTime");
-                    let prop_name_cf = CFStringCreateWithCString(kCFAllocatorDefault, prop_name.as_ptr() as _, kCFStringEncodingUTF8);
-                    let present = CFDictionaryGetValueIfPresent(
-                        properties,
-                        prop_name_cf as _,
-                        &mut value,
+                    let prop_name_cf = CFStringCreateWithCString(
+                        kCFAllocatorDefault,
+                        prop_name.as_ptr() as _,
+                        kCFStringEncodingUTF8,
                     );
+                    let present =
+                        CFDictionaryGetValueIfPresent(properties, prop_name_cf as _, &mut value);
 
                     CFRelease(prop_name_cf.cast());
 
