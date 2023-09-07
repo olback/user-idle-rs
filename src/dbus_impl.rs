@@ -1,10 +1,12 @@
-use crate::error::Error;
-use dbus;
 use std::time::Duration;
+
+use dbus::blocking::Connection;
+
+use crate::error::Error;
 
 // Based on https://bitbucket.org/pidgin/main/src/default/pidgin/gtkidle.c
 
-const SCREENSAVERS: &'static [&'static [&'static str]] = &[
+const SCREENSAVERS: &[&[&str]] = &[
     &[
         "org.freedesktop.ScreenSaver",
         "/org/freedesktop/ScreenSaver",
@@ -24,28 +26,26 @@ const SCREENSAVERS: &'static [&'static [&'static str]] = &[
 
 pub fn get_idle_time() -> Result<Duration, Error> {
     for screensaver in SCREENSAVERS {
-        let conn = match dbus::blocking::Connection::new_session() {
-            Ok(conn) => conn,
-            Err(_) => continue,
-        };
+        let Ok(conn) = Connection::new_session() else {continue};
 
         let proxy = conn.with_proxy(
             screensaver[0],
             screensaver[1],
-            std::time::Duration::from_millis(5000),
+            Duration::from_millis(5000),
         );
 
-        let (time,): (u32,) = match proxy.method_call(screensaver[2], "GetActiveTime", ()) {
-            Ok(v) => v,
-            Err(_) => continue,
-        };
+        let (time,): (u32,) =
+            match proxy.method_call(screensaver[2], "GetActiveTime", ()) {
+                Ok(v) => v,
+                Err(_) => continue,
+            };
 
         // freedesktop seems to return the time in milliseconds??
         if screensaver[0] == "org.freedesktop.ScreenSaver" {
-            return Ok(Duration::from_millis(time as u64));
+            return Ok(Duration::from_millis(u64::from(time)));
         }
 
-        return Ok(Duration::from_secs(time as u64));
+        return Ok(Duration::from_secs(u64::from(time)));
     }
 
     Err(Error::new("No screensaver available"))
