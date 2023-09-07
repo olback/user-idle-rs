@@ -122,7 +122,6 @@ mod test {
     #[test]
     fn main() {
         sleep(Duration::from_secs(TEST_SECS));
-
         let idle = UserIdle::get_time().unwrap();
         assert_eq!(idle.as_seconds(), TEST_SECS);
     }
