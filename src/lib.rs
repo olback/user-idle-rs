@@ -1,75 +1,71 @@
-//! Get a users idle time.
-//!
-//! The time returned is the time since the last user input event.
-//!
-//! See the [`README.md`](https://github.com/olback/user-idle-rs/blob/master/README.md) for more information.
-//!
-//! Example:
-//! ```rust
-//! use user_idle::UserIdle;
-//! let idle = UserIdle::get_time().unwrap();
-//! let idle_seconds = idle.as_seconds();
-//! let idle_minutes = idle.as_minutes();
-//! // Check the documentation for more methods
-//! ```
+/*!
+Get the idle time of a user
+
+The time returned is the time since the last user input event
+
+See the [`README.md`](https://github.com/olback/user-idle-rs/blob/master/README.md) for more information
+
+Example:
+```
+use user_idle::UserIdle;
+let idle = UserIdle::get_time().unwrap();
+let idle_seconds = idle.as_seconds();
+let idle_minutes = idle.as_minutes();
+```
+*/
+
+mod error;
 
 use std::time::Duration;
-mod error;
+
 pub use error::Error;
 
 #[cfg(all(target_os = "linux", not(feature = "dbus")))]
-mod x11_impl;
+#[path = "x11_impl.rs"]
+mod idle;
 
 #[cfg(all(target_os = "linux", feature = "dbus"))]
-mod dbus_impl;
+#[path = "dbus_impl.rs"]
+mod idle;
 
 #[cfg(target_os = "windows")]
-mod windows_impl;
+#[path = "windows_impl.rs"]
+mod idle;
 
 #[cfg(target_os = "macos")]
-mod macos_impl;
+#[path = "macos_impl.rs"]
+mod idle;
 
 pub struct UserIdle {
-    duration: Duration
+    duration: Duration,
 }
 
 impl UserIdle {
-
     /// Get the idle time
     pub fn get_time() -> Result<Self, Error> {
-
-        #[cfg(all(target_os = "linux", not(feature = "dbus")))]
-        let duration = x11_impl::get_idle_time()?;
-
-        #[cfg(all(target_os = "linux", feature = "dbus"))]
-        let duration = dbus_impl::get_idle_time()?;
-
-        #[cfg(target_os = "windows")]
-        let duration = windows_impl::get_idle_time()?;
-
-        #[cfg(target_os = "macos")]
-        let duration = macos_impl::get_idle_time()?;
-
         Ok(UserIdle {
-            duration,
+            duration: idle::get_idle_time()?,
         })
-
     }
 
-    /// Get time in milliseconds
-    ///
-    /// Note: Only MacOS provides this level of resolution,
-    /// other Operating Systems will provide the same value as
-    /// `self.as_milliseconds() * 1_000_000`
+    /**
+    Get time in milliseconds
+
+    Note: Only MacOS provides this level of resolution,
+    other Operating Systems will provide the same value as
+    `self.as_milliseconds() * 1_000_000`
+    */
     pub fn as_nanoseconds(&self) -> u128 {
         self.duration.as_nanos()
     }
 
-    /// Get time in milliseconds
-    ///
-    /// Note: Not all of the dbus screen savers provided
-    /// this level of resolution, in those cases this will
-    /// provide the same value as `self.as_seconds() * 1000`
+    /**
+    Get time in milliseconds
+
+    Note: Not all of the dbus screen savers provided
+    this level of resolution, in those cases this will
+    provide the same value as `self.as_seconds() * 1000`
+    */
     pub fn as_milliseconds(&self) -> u128 {
         self.duration.as_millis()
     }
@@ -109,27 +105,24 @@ impl UserIdle {
         self.as_months() / 12
     }
 
-    /// Convert to a std::time::Duration
+    /// Convert to a [Duration]
     pub fn duration(&self) -> Duration {
         self.duration
     }
-
 }
 
-// #[cfg(test)]
-// mod tests {
+#[cfg(test)]
+mod test {
+    use std::{thread::sleep, time::Duration};
 
-//     use super::UserIdle;
+    use super::UserIdle;
 
-//     #[test]
-//     fn main() {
+    const TEST_SECS: u64 = 10;
 
-//         std::thread::sleep(std::time::Duration::from_secs(10));
-
-//         let idle = UserIdle::get_time().unwrap();
-
-//         println!("Idle for: {} seconds", idle.as_seconds());
-
-//     }
-
-// }
+    #[test]
+    fn main() {
+        sleep(Duration::from_secs(TEST_SECS));
+        let idle = UserIdle::get_time().unwrap();
+        assert_eq!(idle.as_seconds(), TEST_SECS);
+    }
+}
